@@ -44,7 +44,6 @@ def evaluate_linear_probe(
         max_iter=1000,
         random_state=seed,
         solver='lbfgs',
-        multi_class='auto',
     )
     clf.fit(train_features, train_labels)
     predictions = clf.predict(test_features)
