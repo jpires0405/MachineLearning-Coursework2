@@ -23,6 +23,33 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
 
+
+def random_query(
+    unlabeled_indices: list[int],
+    budget: int,
+    seed: int = 42,
+) -> list[int]:
+    """
+    Uniform random baseline: select `budget` indices without replacement.
+
+    Parameters
+    ----------
+    unlabeled_indices : list[int]
+        Pool of indices not yet labeled.
+    budget : int
+        Number of examples to select.
+    seed : int
+        RNG seed for reproducibility.
+
+    Returns
+    -------
+    list[int]  — exactly `budget` randomly chosen indices.
+    """
+    rng = np.random.default_rng(seed)
+    chosen = rng.choice(unlabeled_indices, size=min(budget, len(unlabeled_indices)),
+                        replace=False)
+    return chosen.tolist()
+
 # Minimum cluster size to be considered a valid selection candidate
 MIN_CLUSTER_SIZE = 5
 
@@ -168,5 +195,106 @@ def tpcrp_query(
         shortfall = min(shortfall, len(remaining))
         fallback = rng.choice(remaining, size=shortfall, replace=False).tolist()
         selected += fallback
+
+    return selected[:budget]
+
+
+def dynamic_tpcrp_query(
+    all_features: np.ndarray,
+    unlabeled_indices: list[int],
+    labeled_indices: list[int],
+    budget: int,
+    phase_threshold: int = 60,
+    seed: int = 42,
+) -> list[int]:
+    """
+    Dynamic Phase-Shift TypiClust (DynTPC).
+
+    Identical to tpcrp_query in Steps 1–3 (clustering, filtering, top-B
+    cluster selection).  Step 4 switches the selection criterion based on
+    the current labelled-set size relative to `phase_threshold`:
+
+    - ``len(labeled_indices) < phase_threshold``  →  **argmax** typicality
+      (most typical / densest point).  Cold-start regime: build a
+      representative foundation quickly.
+    - ``len(labeled_indices) >= phase_threshold`` →  **argmin** typicality
+      (least typical / most atypical point).  High-budget regime: seek
+      hard, ambiguous examples at cluster peripheries for discriminative
+      refinement, as predicted by the phase-transition theory of
+      Hacohen et al. (2022).
+
+    Parameters
+    ----------
+    all_features : np.ndarray  shape (N_total, 512)
+    unlabeled_indices : list[int]
+    labeled_indices : list[int]
+    budget : int
+    phase_threshold : int
+        Cumulative number of labeled examples at which the strategy flips
+        from typicality-maximising to typicality-minimising.
+        Default: 60 (= 6 × B for B=10, midpoint of the 10→100 range).
+    seed : int
+
+    Returns
+    -------
+    list[int]  — exactly `budget` dataset indices.
+    """
+    rng = np.random.default_rng(seed)
+    unlabeled_set = set(unlabeled_indices)
+    labeled_set   = set(labeled_indices)
+
+    # Determine selection mode before clustering
+    use_argmax = len(labeled_indices) < phase_threshold
+
+    # ── Step 1: K-Means clustering ────────────────────────────────────────────
+    n_clusters = min(len(labeled_indices) + budget, MAX_CLUSTERS)
+    n_clusters = min(n_clusters, len(unlabeled_indices))
+
+    kmeans = KMeans(n_clusters=n_clusters, random_state=seed, n_init='auto')
+    cluster_labels = kmeans.fit_predict(all_features)
+
+    cluster_to_indices: dict[int, list[int]] = {c: [] for c in range(n_clusters)}
+    for idx in range(len(all_features)):
+        cluster_to_indices[cluster_labels[idx]].append(idx)
+
+    # ── Step 2: Filter uncovered clusters ────────────────────────────────────
+    valid_clusters: list[int] = []
+    for c, members in cluster_to_indices.items():
+        if any(idx in labeled_set for idx in members):
+            continue
+        if len(members) < MIN_CLUSTER_SIZE:
+            continue
+        valid_clusters.append(c)
+
+    # ── Step 3: Select top-B clusters by size ─────────────────────────────────
+    valid_clusters.sort(key=lambda c: len(cluster_to_indices[c]), reverse=True)
+    top_clusters = valid_clusters[:budget]
+
+    selected: list[int] = []
+
+    # ── Step 4: Phase-aware selection within each cluster ─────────────────────
+    for c in top_clusters:
+        members = cluster_to_indices[c]
+        cluster_size = len(members)
+        k_nn = min(K_TYPICALITY, cluster_size)
+
+        unlabeled_members = [idx for idx in members if idx in unlabeled_set]
+        if not unlabeled_members:
+            continue
+
+        features_cluster  = all_features[unlabeled_members]
+        typicality_scores = compute_typicality(features_cluster, k_nn)
+
+        # Phase switch: argmax in cold-start, argmin in high-budget
+        chosen_local = int(np.argmax(typicality_scores) if use_argmax
+                           else np.argmin(typicality_scores))
+        selected.append(unlabeled_members[chosen_local])
+
+    # ── Fallback ──────────────────────────────────────────────────────────────
+    if len(selected) < budget:
+        selected_set = set(selected)
+        remaining = [i for i in unlabeled_indices if i not in selected_set]
+        shortfall = min(budget - len(selected), len(remaining))
+        selected += rng.choice(remaining, size=shortfall, replace=False).tolist()
 
     return selected[:budget]

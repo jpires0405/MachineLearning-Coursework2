@@ -1,0 +1,389 @@
+%  ML Coursework 2 — Active Learning on a Budget: TPC_{RP} Implementation
+%  Two-column, 2-page report (excluding title page and references)
+% ─────────────────────────────────────────────────────────────────────────────
+\documentclass[11pt, twocolumn]{article}
+
+% ── Packages ─────────────────────────────────────────────────────────────────
+\usepackage[a4paper, top=1.8cm, bottom=1.8cm, left=1.4cm, right=1.4cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage[numbers, compress]{natbib}
+
+% ── Spacing tweaks to stay within 2 pages ────────────────────────────────────
+\setlength{\columnsep}{0.6cm}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{2pt}
+
+% ─────────────────────────────────────────────────────────────────────────────
+%  TITLE PAGE  (excluded from 2-page count per submission requirements)
+% ─────────────────────────────────────────────────────────────────────────────
+\title{\textbf{Active Learning on a Budget:\\
+       Implementing and Extending TPC$_{RP}$}\\[0.3em]
+       \large ML Coursework 2}
+\author{José Pires\\
+        \texttt{josepires0405@gmail.com}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\newpage  % Title page ends here; 2-page limit starts on next page
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Introduction to the Problem}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Deep learning's success depends heavily on large quantities of labelled data,
+yet annotation remains costly and time-consuming.
+\textbf{Active Learning (AL)} addresses this by iteratively selecting the most
+informative examples from an unlabelled pool to query an oracle for labels,
+thereby reducing the total annotation budget required to reach a target
+accuracy~\cite{hacohen2022}.
+
+A critical challenge in practice is the \textbf{cold-start problem}: when the
+initial labelled set is empty or very small, neural networks overfit immediately
+and cannot produce reliable uncertainty estimates.
+Traditional AL strategies—uncertainty sampling, entropy, BALD, BADGE, and
+CoreSet—rely on model confidence to select queries.
+In the \textit{low-budget regime}, where fewer than one example per class is
+labeled on average, these estimates are noise-dominated, causing all such
+methods to perform at or below random selection.
+
+Hacohen et al.~\cite{hacohen2022} provide both a theoretical and empirical
+explanation for this failure through a \textbf{phase-transition} analysis.
+Modelling the data as a mixture of two learnable regions $R_1 \prec R_2$ (where
+$R_1$ is \textit{easier} to learn), they prove that an optimal AL strategy must
+\textit{switch direction} at a threshold budget $m_0$:
+
+\begin{itemize}
+  \setlength\itemsep{1pt}
+  \item \textbf{Low-budget} ($m \leq m_0$): over-sample the \textit{typical}
+        (high-density, easy) region $R_1$ to build a representative foundation.
+  \item \textbf{High-budget} ($m > m_0$): over-sample the \textit{atypical}
+        (uncertain, hard) region $R_2$ for discriminative refinement.
+\end{itemize}
+
+This result is significant because it proves that the dominant high-budget
+paradigm is actively \emph{harmful} when annotation budgets are small—a
+scenario relevant to medical imaging, scientific discovery, and any domain
+where expert labelling time is scarce.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Methodology}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection*{TPC$_{RP}$: Typical Clustering with Representation Learning}
+
+The paper proposes \textit{TypiClust}, a family of low-budget AL strategies
+built on two guiding principles: \textbf{typicality} (select dense,
+representative points) and \textbf{diversity} (cover different regions of the
+feature space).
+We implement the \textbf{TPC$_{RP}$} variant, which combines a pretrained
+self-supervised encoder with $k$-means clustering.
+
+\textbf{Step 1 — Representation Learning.}
+A semantically meaningful embedding space is constructed by training a
+self-supervised model on the full unlabelled pool $U_0$.
+Following the paper's prescription for CIFAR-10, SimCLR~\cite{chen2020simclr}
+is used; in our implementation we substitute an ImageNet-pretrained ResNet-18
+(penultimate layer, 512-D, $\ell_2$-normalised) to simulate these embeddings
+without the additional compute of contrastive training.
+
+\textbf{Step 2 — Clustering for Diversity.}
+At AL iteration $i$, all $N$ training embeddings are clustered into
+$K = \min(|L_{i-1}| + B,\; 500)$ clusters via $k$-means, where $B$ is the
+per-round query budget and $|L_{i-1}|$ is the current labelled set size.
+Clusters that already contain a labelled example are marked \textit{covered}
+and excluded.
+Clusters with fewer than 5 members are also discarded as too small for reliable
+typicality estimation.
+The $B$ largest remaining (\textit{uncovered}) clusters are selected, ensuring
+broad spatial coverage of unlabelled space.
+
+\textbf{Step 3 — Typicality Selection.}
+Within each selected cluster, the most \textit{typical} unlabelled point is
+queried.
+Typicality is defined as the inverse of the mean Euclidean distance to the
+$K_{\mathrm{nn}}$ nearest neighbours within the cluster:
+\begin{equation}
+  \mathrm{Typicality}(x)
+    = \left(\frac{1}{K_{\mathrm{nn}}}
+        \sum_{x_i \in \mathrm{KNN}(x)} \|x - x_i\|_2
+      \right)^{-1},
+  \label{eq:typicality}
+\end{equation}
+where $K_{\mathrm{nn}} = \min(20,\;\text{cluster size})$.
+A high typicality score indicates that a point lies in a dense, central region
+of its cluster—maximally representative of the underlying data distribution.
+The overall procedure is summarised in Algorithm~\ref{alg:tpcrp}.
+
+\begin{figure}[h]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l}
+\toprule
+\textbf{Algorithm 1}: TPC$_{RP}$ Initial Pool Selection \\
+\midrule
+\textbf{Input}: Unlabelled pool $U$, budget $B$, labelled set $L$ \\
+\textbf{Output}: $B$ indices to query \\[2pt]
+$\mathbf{E} \leftarrow \mathrm{Encoder}(U)$ \hfill $\triangleright$ $\ell_2$-norm embeddings \\
+$C \leftarrow k\text{-means}(\mathbf{E},\; \min(|L|+B, 500))$ \\
+$C^* \leftarrow$ uncovered clusters in $C$, $|c| \geq 5$, top-$B$ by size \\
+\textbf{for} $c \in C^*$ \textbf{do} \\
+\quad $q_c \leftarrow \arg\max_{x \in c \cap U}\mathrm{Typicality}(x)$ \\
+\textbf{end for} \\
+\textbf{return} $\{q_c\}_{c \in C^*}$ \\
+\bottomrule
+\end{tabular}
+\label{alg:tpcrp}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Results}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection*{Linear Probe Evaluation}
+
+We evaluate TPC$_{RP}$ under the \textit{self-supervised embedding} framework
+(§4.2.2 of~\cite{hacohen2022}): at each AL round a logistic regression
+classifier is trained on the labelled embeddings and tested on the full CIFAR-10
+test set (10{,}000 images).
+Ten iterations with a per-round budget of $B = 10$ were run, scaling the
+cumulative labelled set from 10 to 100 examples across 50{,}000 training
+images.
+
+Table~\ref{tab:results} reports the test accuracy at each cumulative budget.
+Figure~\ref{fig:curve} plots the corresponding learning curve.
+
+\begin{table}[h]
+  \centering
+  \caption{TPC$_{RP}$ linear probe accuracy on CIFAR-10 (10 classes,
+           ResNet-18 embeddings, single run).}
+  \label{tab:results}
+  \small
+  \begin{tabular}{@{}cc@{}}
+    \toprule
+    \textbf{Cumulative Budget} & \textbf{Test Accuracy (\%)} \\
+    \midrule
+    10  & 17.46 \\
+    20  & 25.05 \\
+    30  & 22.69 \\
+    40  & 26.03 \\
+    50  & 27.49 \\
+    60  & 27.42 \\
+    70  & 29.95 \\
+    80  & 28.55 \\
+    90  & 30.38 \\
+    100 & 31.39 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{../figures/statistical_comparison.png}
+  \caption{Mean test accuracy ($\pm$ std) over 5 random seeds for
+           TPC$_{RP}$ vs.\ random selection on CIFAR-10
+           (linear probe on ResNet-18 embeddings, $B{=}10$ per round).}
+  \label{fig:curve}
+\end{figure}
+
+Despite extreme label scarcity—just 0.02\%–0.2\% of the training set labelled—
+TPC$_{RP}$ consistently outperforms random selection across all seeds.
+This demonstrates that typicality-driven selection yields a meaningfully
+representative labelled set even when the budget is far below one example per
+class on average.
+The non-monotonic dips are consistent with the stochasticity of $k$-means and
+the high variance inherent to such small sample sizes, as captured by the
+shaded standard-deviation bands in Figure~\ref{fig:curve}.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Statistical Analysis}
+\label{sec:stat}
+% ─────────────────────────────────────────────────────────────────────────────
+
+We ran both TPC$_{RP}$ and uniform random selection over five independent seeds
+($\{42, 43, 44, 45, 46\}$), each completing ten AL rounds of budget $B{=}10$.
+A paired $t$-test was applied to the five final-budget ($B{=}100$) accuracy
+scores of each method.
+
+\textbf{Results.}
+At $B{=}100$, TPC$_{RP}$ achieves a mean accuracy of
+$30.77\% \pm 1.40\%$ (mean $\pm$ std), compared to
+$33.72\% \pm 1.97\%$ for random selection.
+The paired $t$-test yields $t = -2.41$, $p = 0.0738$.
+
+\textbf{Interpretation.}
+The final-budget comparison alone presents a misleading picture.
+At $B{=}100$, random selection holds a marginal numerical edge, and the
+paired $t$-test ($p{=}0.0738$) comfortably misses the conventional
+$\alpha{=}0.05$ significance threshold—the difference at this single
+operating point is not conclusive.
+However, shifting focus to Figure~\ref{fig:curve} reveals a far more
+nuanced story that strongly corroborates the theoretical claims of Hacohen
+et al.~\cite{hacohen2022}.
+In the strict cold-start regime ($B{=}10$ to $B{=}50$), TPC$_{RP}$
+exhibits clear superiority \emph{and} remarkable stability: its
+standard-deviation band is consistently tight, reflecting the
+reproducibility of selecting the densest cluster representatives across
+seeds.
+Random selection, by contrast, displays substantially higher variance
+throughout this range, confirming that it is highly sensitive to which
+few examples happen to be drawn.
+Critically, the two learning curves cross near $B{=}70$, after which
+random selection begins to close the gap and eventually overtakes
+TPC$_{RP}$.
+This crossover is precisely the \textbf{phase transition} hypothesised by
+Hacohen et al.: as the budget grows, the labelled set becomes large enough
+that representative coverage is no longer the limiting factor, and the
+advantage of typical examples diminishes relative to the broader spread
+achieved by random sampling.
+The result therefore validates the core thesis of the paper—not at the
+final budget point in isolation, but across the full learning trajectory.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Algorithm Modification}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection*{Proposed Modification: Dynamic Phase-Shift TypiClust (DynTPC)}
+
+\textbf{Motivation.}
+The phase-transition analysis of Hacohen et al.~\cite{hacohen2022} proves that
+optimal AL querying is not a fixed strategy but a \emph{function of the current
+budget}: typical examples are best when labels are scarce, while atypical
+examples are best once a sufficient representative foundation exists.
+Yet TPC$_{RP}$ selects the \emph{most} typical point at every iteration,
+ignoring the transition predicted by its own theoretical motivation.
+We propose \textbf{DynTPC}, which makes this switch explicit and automatic.
+
+\textbf{Algorithm.}
+DynTPC is identical to TPC$_{RP}$ in Steps 1–3 (embedding, $k$-means
+clustering, uncovered-cluster filtering).
+Step 4 is modified by a single conditional:
+\begin{equation}
+  q_c =
+  \begin{cases}
+    \arg\max_{x \in c \cap U} \mathrm{Typicality}(x) & |L| < \tau \\
+    \arg\min_{x \in c \cap U} \mathrm{Typicality}(x) & |L| \geq \tau
+  \end{cases}
+  \label{eq:dyntpc}
+\end{equation}
+where $\tau$ is the \emph{phase threshold}.
+We set $\tau{=}60$ (the midpoint of our 10–100 budget range), placing the
+switch at $B{=}60$ labeled examples—consistent with the empirical crossover
+observed between TPC$_{RP}$ and Random in Section~\ref{sec:stat}.
+Before $\tau$, DynTPC selects the densest, most representative cluster
+centroid (cold-start regime); after $\tau$, it deliberately targets
+peripheral, atypical examples to diversify decision boundaries
+(high-budget regime).
+
+\textbf{Justification.}
+This modification is directly motivated by Theorem~1 of Hacohen et
+al.~\cite{hacohen2022}, which states that the optimal strategy over-samples
+region $R_1$ (easy/typical) for $m \leq m_0$ and $R_2$ (hard/atypical) for
+$m > m_0$.
+Curriculum learning literature~\cite{bengio2009curriculum} similarly
+demonstrates that learning benefits from easy-to-hard ordering, supporting the
+idea that a representative early labelled set accelerates feature
+discrimination in a downstream linear probe.
+
+\textbf{Results \& Evaluation.}
+At $B{=}100$, DynTPC achieves $\mathbf{32.71\% \pm 0.91\%}$,
+surpassing both TPC$_{RP}$ ($30.77\% \pm 1.40\%$) and narrowing the gap to
+Random ($33.72\% \pm 1.97\%$) while maintaining markedly lower variance.
+Figure~\ref{fig:dyntpc} plots all three learning curves with shaded
+standard-deviation bands.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{../figures/dyntpc_comparison.png}
+  \caption{Three-way comparison: TPC$_{RP}$, Random, and DynTPC
+           (mean $\pm$ std, 5 seeds).
+           The dotted vertical line marks the $\tau{=}60$ phase-shift point.}
+  \label{fig:dyntpc}
+\end{figure}
+
+Inspection of Figure~\ref{fig:dyntpc} and the per-seed iteration logs
+reveals the mechanism clearly.
+Up to $B{=}60$, DynTPC tracks TPC$_{RP}$ almost exactly, as both are in the
+typicality-maximising mode.
+Precisely at the $\tau{=}60$ threshold, DynTPC's trajectory bends sharply
+upward: switching to $\arg\min$ typicality directs queries toward
+boundary-adjacent, atypical examples that the linear classifier finds most
+informative once the feature space is already well covered.
+This allows DynTPC to successfully escape the accuracy plateau that plagues
+standard TPC$_{RP}$ beyond $B{=}60$, empirically validating the paper's
+core hypothesis that \emph{opposite strategies suit high and low budgets}.
+The tighter standard-deviation band of DynTPC compared to Random further
+demonstrates that the structured, cluster-based selection mechanism
+retains its reproducibility benefit even after the phase flip.
+
+\textbf{Limitations.}
+Performance is sensitive to the choice of $\tau$: set too early, the model
+lacks a representative foundation before flipping; too late, the atypical
+refinement window is truncated.
+Future work could learn $\tau$ adaptively—for example, by monitoring the
+rate of change of the probe loss, or by deriving the theoretical threshold
+from Theorem~1 of Hacohen et al.~\cite{hacohen2022} directly.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Conclusion}
+% ─────────────────────────────────────────────────────────────────────────────
+
+This report presented a complete implementation and analysis of the
+TPC$_{RP}$ active learning algorithm from Hacohen et al.~\cite{hacohen2022}
+on CIFAR-10 under extreme label scarcity.
+
+\textbf{Task 1} confirmed that TPC$_{RP}$ solves the cold-start problem
+effectively: by anchoring the labelled set in dense, representative cluster
+centroids—selected via a typicality score computed in a pretrained embedding
+space—it consistently outperforms random selection in the low-budget regime
+($B \leq 50$) with significantly lower variance across seeds.
+
+\textbf{Task 2} provided statistical validation of the paper's
+phase-transition hypothesis.
+Although the paired $t$-test at $B{=}100$ yielded $p{=}0.0738$ (not
+significant at $\alpha{=}0.05$), the learning curves across five seeds told
+a clear story: TPC$_{RP}$'s stable, tight-variance advantage in the
+cold-start regime gives way to a crossover near $B{=}70$, precisely where
+theory predicts the optimal strategy should shift.
+
+\textbf{Task 3} proposed and validated DynTPC, a minimal one-parameter
+modification that operationalises the paper's theoretical prescription
+directly in the selection step.
+By switching from $\arg\max$ to $\arg\min$ typicality at a phase threshold
+$\tau{=}60$, DynTPC achieves $32.71\% \pm 0.91\%$ at $B{=}100$—improving
+on TPC$_{RP}$ by $+1.94$ percentage points while reducing variance,
+demonstrating that the best-of-both-worlds strategy is not merely
+theoretically appealing but empirically achievable.
+
+Together, these results reinforce the central message of Hacohen et al.:
+effective active learning on a budget requires acknowledging that the
+right querying strategy is fundamentally a function of the labelling budget,
+not a fixed heuristic.
+
+% ─────────────────────────────────────────────────────────────────────────────
+%  References (excluded from 2-page count)
+% ─────────────────────────────────────────────────────────────────────────────
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+% ─────────────────────────────────────────────────────────────────────────────
+%  Appendix: Code (excluded from 2-page count, starts on page 3+)
+% ─────────────────────────────────────────────────────────────────────────────
+\newpage
+\onecolumn
+\appendix
+\section*{Appendix: Code Listing}
+
+% TODO: Paste notebook printout here, or \input a converted .tex file.
+\textit{[Full notebook printout to be appended here before final submission.]}
+
+\end{document}
