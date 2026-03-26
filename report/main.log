@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2026.2.19)  25 MAR 2026 22:57
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2026.2.19)  26 MAR 2026 01:34
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -283,40 +283,89 @@ Package microtype Info: Loading configuration file microtype.cfg.
 File: microtype.cfg 2025/02/11 v3.2a microtype main configuration file (RS)
 )
 LaTeX Info: Redefining \microtypesetup on input line 3065.
-) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/parskip/parskip.sty
-Package: parskip 2021-03-14 v2.0h non-zero parskip adjustments
 ) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/natbib/natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip56
 \bibsep=\skip57
 LaTeX Info: Redefining \cite on input line 694.
 \c@NAT@ctr=\count303
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/pdfpages/pdfpages.sty
+Package: pdfpages 2025/01/30 v0.6e Insert pages of external PDF documents (AM)
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2024/03/16 v1.1e Standard LaTeX ifthen package (DPC)
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2023/07/08 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count304
+\calc@Bcount=\count305
+\calc@Adimen=\dimen179
+\calc@Bdimen=\dimen180
+\calc@Askip=\skip58
+\calc@Bskip=\skip59
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count306
+\calc@Cskip=\skip60
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/eso-pic/eso-pic.sty
+Package: eso-pic 2023/05/03 v3.0c eso-pic (RN)
+\ESO@tempdima=\dimen181
+\ESO@tempdimb=\dimen182
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2024/09/29 v3.02 LaTeX color extensions (UK)
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 274.
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics/mathcolor.ltx)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1349.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1353.
+Package xcolor Info: Model `RGB' extended on input line 1365.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1367.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1370.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1371.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
+))
+\AM@pagewidth=\dimen183
+\AM@pageheight=\dimen184
+\AM@fboxrule=\dimen185
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/pdfpages/pppdftex.def
+File: pppdftex.def 2025/01/30 v0.6e Pdfpages driver for pdfTeX (AM)
+)
+\pdfpages@includegraphics@status=\count307
+\AM@pagebox=\box55
+\AM@global@opts=\toks26
+\AM@pagecnt=\count308
+\AM@toc@title=\toks27
+\AM@lof@heading=\toks28
+\c@AM@survey=\count309
+\AM@templatesizebox=\box56
 ) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count304
-\l__pdf_internal_box=\box55
-) (./main.aux)
+\l__color_backend_stack_int=\count310
+\l__pdf_internal_box=\box57
+)
+No file main.aux.
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 32.
-LaTeX Font Info:    ... okay on input line 32.
-
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -325,22 +374,22 @@ LaTeX Font Info:    ... okay on input line 32.
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
-* h-part:(L,W,R)=(39.83368pt, 517.84052pt, 39.83368pt)
-* v-part:(T,H,B)=(51.21504pt, 742.61676pt, 51.21504pt)
+* h-part:(L,W,R)=(36.98866pt, 523.53055pt, 36.98866pt)
+* v-part:(T,H,B)=(48.36958pt, 748.30768pt, 48.36958pt)
 * \paperwidth=597.50787pt
 * \paperheight=845.04684pt
-* \textwidth=517.84052pt
-* \textheight=742.61676pt
-* \oddsidemargin=-32.43631pt
-* \evensidemargin=-32.43631pt
-* \topmargin=-58.05495pt
+* \textwidth=523.53055pt
+* \textheight=748.30768pt
+* \oddsidemargin=-35.28133pt
+* \evensidemargin=-35.28133pt
+* \topmargin=-60.9004pt
 * \headheight=12.0pt
 * \headsep=25.0pt
 * \topskip=11.0pt
 * \footskip=30.0pt
 * \marginparwidth=4.0pt
 * \marginparsep=10.0pt
-* \columnsep=17.07182pt
+* \columnsep=15.6491pt
 * \skip\footins=10.0pt plus 4.0pt minus 2.0pt
 * \hoffset=0.0pt
 * \voffset=0.0pt
@@ -353,60 +402,62 @@ LaTeX Font Info:    ... okay on input line 32.
 
 (/usr/local/texlive/2025basic/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count305
-\scratchdimen=\dimen179
-\scratchbox=\box56
-\nofMPsegments=\count306
-\nofMParguments=\count307
-\everyMPshowfont=\toks26
-\MPscratchCnt=\count308
-\MPscratchDim=\dimen180
-\MPnumerator=\count309
-\makeMPintoPDFobject=\count310
-\everyMPtoPDFconversion=\toks27
+\scratchcounter=\count311
+\scratchdimen=\dimen186
+\scratchbox=\box58
+\nofMPsegments=\count312
+\nofMParguments=\count313
+\everyMPshowfont=\toks29
+\MPscratchCnt=\count314
+\MPscratchDim=\dimen187
+\MPnumerator=\count315
+\makeMPintoPDFobject=\count316
+\everyMPtoPDFconversion=\toks30
 ) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
- (/usr/local/texlive/2025basic/texmf-dist/tex/latex/grfext/grfext.sty
-Package: grfext 2019/12/03 v1.3 Manage graphics extensions (HO)
-)
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
-Package grfext Info: Graphics extension search list:
-(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps]
-(grfext)             \AppendGraphicsExtensions on input line 504.
  (/usr/local/texlive/2025basic/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package hyperref Info: Link coloring OFF on input line 32.
+Package hyperref Info: Link coloring OFF on input line 26.
 \@outlinefile=\write3
 \openout3 = `main.out'.
 
-LaTeX Info: Redefining \microtypecontext on input line 32.
-Package microtype Info: Applying patch `item' on input line 32.
-Package microtype Info: Applying patch `toc' on input line 32.
-Package microtype Info: Applying patch `eqnum' on input line 32.
-Package microtype Info: Applying patch `footnote' on input line 32.
-Package microtype Info: Applying patch `verbatim' on input line 32.
-LaTeX Info: Redefining \microtypesetup on input line 32.
+LaTeX Info: Redefining \microtypecontext on input line 26.
+Package microtype Info: Applying patch `item' on input line 26.
+Package microtype Info: Applying patch `toc' on input line 26.
+Package microtype Info: Applying patch `eqnum' on input line 26.
+Package microtype Info: Applying patch `footnote' on input line 26.
+Package microtype Info: Applying patch `verbatim' on input line 26.
+LaTeX Info: Redefining \microtypesetup on input line 26.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
 Package microtype Info: Automatic font expansion enabled (level 2),
 (microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
 Package microtype Info: Using default expansion set `alltext-nott'.
-LaTeX Info: Redefining \showhyphens on input line 32.
+LaTeX Info: Redefining \showhyphens on input line 26.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
  (/usr/local/texlive/2025basic/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman (RS)
+) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/pdflscape/pdflscape.sty
+Package: pdflscape 2022-10-27 v0.13 Display of landscape pages in PDF
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/pdflscape/pdflscape-nometadata.sty
+Package: pdflscape-nometadata 2022-10-28 v0.13 Display of landscape pages in PDF (HO)
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/graphics/lscape.sty
+Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 35.
+Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
+))
+LaTeX Font Info:    Trying to load font information for U+msa on input line 33.
  (/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 35.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 33.
  (/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (/usr/local/texlive/2025basic/texmf-dist/tex/latex/microtype/mt-msb.cfg
@@ -418,72 +469,71 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             See the microtype manual for details.
 
 
-Package natbib Warning: Citation `hacohen2022' on page 1 undefined on input line 47.
+[1
 
 
-Package natbib Warning: Citation `hacohen2022' on page 1 undefined on input line 58.
+{/usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+
+Package natbib Warning: Citation `hacohen2022' on page 1 undefined on input line 48.
 
 
-Underfull \vbox (badness 4001) has occurred while \output is active []
+Package natbib Warning: Citation `hacohen2022' on page 1 undefined on input line 54.
+
+
+Package natbib Warning: Citation `hacohen2022' on page 1 undefined on input line 74.
+
+
+Package natbib Warning: Citation `chen2020simclr' on page 1 undefined on input line 83.
+
+
+Overfull \hbox (75.93878pt too wide) detected at line 102
+[][][][]\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 x\OT1/cmr/m/n/10.95 ) =  [][] \OML/cmm/m/it/10.95 ;  K[] \OT1/cmr/m/n/10.95 = [](20\OML/cmm/m/it/10.95 ;  \OMS/cmsy/m/n/10.95 j\OML/cmm/m/it/10.95 c\OMS/cmsy/m/n/10.95 j\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/10.95 :
+ []
+
+
+Overfull \hbox (0.5641pt too wide) in paragraph at lines 108--124
+ [][] 
+ []
+
+
+Package natbib Warning: Citation `hacohen2022' on page 1 undefined on input line 131.
+
+
+LaTeX Warning: Reference `tab:results' on page 1 undefined on input line 134.
+
+
+LaTeX Warning: Reference `fig:curve' on page 1 undefined on input line 134.
 
 
 
-
-Package natbib Warning: Citation `chen2020simclr' on page 1 undefined on input line 93.
-
-
-LaTeX Warning: Reference `alg:tpcrp' on page 1 undefined on input line 124.
-
-
-
-[1{/usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
-
-
-]
-
-Package natbib Warning: Citation `hacohen2022' on page 2 undefined on input line 155.
-
-
-LaTeX Warning: Reference `tab:results' on page 2 undefined on input line 162.
-
-
-LaTeX Warning: Reference `fig:curve' on page 2 undefined on input line 163.
-
-<../figures/statistical_comparison.png, id=28, 570.933pt x 351.714pt>
+<../figures/statistical_comparison.png, id=13, 570.933pt x 351.714pt>
 File: ../figures/statistical_comparison.png Graphic file (type png)
 <use ../figures/statistical_comparison.png>
-Package pdftex.def Info: ../figures/statistical_comparison.png  used on input line 191.
-(pdftex.def)             Requested size: 250.38434pt x 154.2448pt.
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-LaTeX Warning: Reference `fig:curve' on page 2 undefined on input line 205.
+Package pdftex.def Info: ../figures/statistical_comparison.png  used on input line 159.
+(pdftex.def)             Requested size: 253.94072pt x 156.43442pt.
 
 
 
+pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.179 
+       [1
 
-LaTeX Warning: Reference `fig:curve' on page 2 undefined on input line 229.
 
-
-Package natbib Warning: Citation `hacohen2022' on page 2 undefined on input line 231.
-
-
-
-[2
-/Users/josepires/Documents/ML_COURSEWORK_2/MachineLearning-Coursework2/report/main.tex:250: pdfTeX error (font expansion): auto expansion is only possible with scalable fonts.
+/Users/josepires/Documents/ML_COURSEWORK_2/MachineLearning-Coursework2/report/main.tex:179: pdfTeX error (font expansion): auto expansion is only possible with scalable fonts.
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.250 
+l.179 
       
 
  
 Here is how much of TeX's memory you used:
- 12796 strings out of 474662
- 198379 string characters out of 5751109
- 645035 words of memory out of 5000000
- 35514 multiletter control sequences out of 15000+600000
- 577226 words of font info for 171 fonts, out of 8000000 for 9000
+ 14016 strings out of 474662
+ 218262 string characters out of 5751109
+ 670143 words of memory out of 5000000
+ 36751 multiletter control sequences out of 15000+600000
+ 575648 words of font info for 149 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
- 75i,12n,79p,1079b,450s stack positions out of 10000i,1000n,20000p,200000b,200000s
-/Users/josepires/Documents/ML_COURSEWORK_2/MachineLearning-Coursework2/report/main.tex:250:  ==> Fatal error occurred, no output PDF file produced!
+ 75i,12n,79p,1079b,494s stack positions out of 10000i,1000n,20000p,200000b,200000s
+/Users/josepires/Documents/ML_COURSEWORK_2/MachineLearning-Coursework2/report/main.tex:179:  ==> Fatal error occurred, no output PDF file produced!
